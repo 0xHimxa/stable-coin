@@ -36,7 +36,7 @@ contract DSCEngine {
     error DSCEngine__NotAllowedToken();
     error DSCEngine__TransferFailed();
     error DSCEngine__HealthFactorBroken(uint256 healthFactor);
-
+   error DSCEngine__MintFailed();
     /////////////////////////////
     //  State Variables       //
     /////////////////////////////
@@ -161,7 +161,10 @@ contract DSCEngine {
         //if they minted to much ($150 DSC, $100 ETH);
 
         _revertHealFactorBroken(msg.sender);
-
+bool minted = s_dsc.mint(msg.sender, amountDscToMint);
+if(!minted){
+    revert DSCEngine__MintFailed();
+}
         
     }
 
@@ -184,7 +187,7 @@ contract DSCEngine {
     function _getAccountInformation(
         address user
     ) private view returns (uint256 totalMinted, uint256 collectralValueInUsd) {
-        uint256 totalMinted = s_dscMinted[user];
+         totalMinted = s_dscMinted[user];
         collectralValueInUsd = getAccountCollateralValueInUsd(user);
     }
 
