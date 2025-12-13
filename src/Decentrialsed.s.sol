@@ -32,6 +32,8 @@ error DecentralisedStableCoin__MustBeMoreThanZero();
 error DecentralisedStableCoin__BurnAmountExeedBanlance();
 error DecentralisedStableCoin__NotToZeroAddress();
 
+
+//check more abou the ownable
 constructor()ERC20("Decentrailseds","DSC") Ownable(msg.sender){}
 
 

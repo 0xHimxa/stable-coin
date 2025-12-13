@@ -256,7 +256,7 @@ return(collectralAdjustedForThreshold * PRECISION)/totalMinted;
             s_priceFeed[token]
         );
         (, int256 price, , , ) = pricefeed.latestRoundData();
-
+     
         return ((uint256(price )* ADDTIONAL_FEED_PRECISION) * amount) / PRECISION;
     }
 }
