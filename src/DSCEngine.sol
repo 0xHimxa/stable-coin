@@ -38,6 +38,7 @@ contract DSCEngine {
     error DSCEngine__HealthFactorBroken(uint256 healthFactor);
     error DSCEngine__MintFailed();
     error DSCEngine__HealthFactorOK();
+    error DSCEngine__HealthFactorNotImporived();
 
     /////////////////////////////
     //  State Variables       //
@@ -219,18 +220,7 @@ contract DSCEngine {
     }
 
     function burnDsc(uint256 amount) public moreThanZero(amount) {
-        s_dscMinted[msg.sender] -= amount;
-        // with this alnoe it will work, just for incase that why we do it the other way
-
-        // s_dsc.burn(msg.sender, amount);
-
-        bool success = s_dsc.transferFrom(msg.sender, address(this), amount);
-
-        if (!success) {
-            revert DSCEngine__TransferFailed();
-        }
-
-        s_dsc.burn(amount);
+    _burnDsc(amount, msg.sender, msg.sender);
         _revertHealFactorBroken(msg.sender); // it will prob never reach this line
         //emit DSCBurned(msg.sender, amount);
     }
@@ -274,8 +264,19 @@ contract DSCEngine {
             bonusCollateral;
 
 
-            _redeemCollateral(user, msg.sender, colletral, totalCollateralToRedeemamountCollateral);
+            _redeemCollateral(user, msg.sender, colletral, totalCollateralToRedeem);
   
+  _burnDsc(debtToCover, user, msg.sender);
+  uint256 endingUserHealthFactor = _healthFactore(user);
+
+if(endingUserHealthFactor < MIN_HEALTH_FACTOR){
+
+revert DSCEngine__HealthFactorNotImporived();
+
+}
+
+
+
   
     }
 
@@ -298,7 +299,7 @@ contract DSCEngine {
 
 
 function _burnDsc(uint256 amountDscToBurn, address onBehalfOf, address  dscFrom) private{
-    s_dscMinted[onBehalfOf] -= amount;
+    s_dscMinted[onBehalfOf] -= amountDscToBurn;
         // with this alnoe it will work, just for incase that why we do it the other way
 
         // s_dsc.burn(msg.sender, amount);
@@ -318,12 +319,12 @@ function _burnDsc(uint256 amountDscToBurn, address onBehalfOf, address  dscFrom)
 function _redeemCollateral(address from, address to,address tokenCollecteralAddress, uint256 amountCollateral) private{
 
 
- s_collectralDeposited[from][tokenCollecteralAddress] -= amount;
-        emit CollateralRedeemed(from,to, tokenCollecteralAddress, amount);
+ s_collectralDeposited[from][tokenCollecteralAddress] -= amountCollateral;
+        emit CollateralRedeemed(from,to, tokenCollecteralAddress, amountCollateral);
 
         bool success = IERC20(tokenCollecteralAddress).transfer(
             to,
-            amount
+            amountCollateral
         );
 
         if (!success) {
