@@ -432,4 +432,14 @@ function _redeemCollateral(address from, address to,address tokenCollecteralAddr
         return
             ((uint256(price) * ADDTIONAL_FEED_PRECISION) * amount) / PRECISION;
     }
+
+
+
+    function getAccountInfomation(address user) external view returns(uint256 totalMinted, uint256 collectralValueIn){
+
+(totalMinted, collectralValueIn) = _getAccountInformation(user);
+
+
+return (totalMinted, collectralValueIn);
+    }
 }
