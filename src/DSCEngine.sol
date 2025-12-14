@@ -377,7 +377,17 @@ function _redeemCollateral(address from, address to,address tokenCollecteralAddr
         //500/100 > 1
         //that thier health factor
 
+        if(totalMinted == 0){
+            return PRECISION;
+        }
+
+
         return (collectralAdjustedForThreshold * PRECISION) / totalMinted;
+
+     
+
+
+
     }
 
     //1. check do they have enough colleteral
@@ -442,4 +452,65 @@ function _redeemCollateral(address from, address to,address tokenCollecteralAddr
 
 return (totalMinted, collectralValueIn);
     }
+
+
+
+
+
+
+    function getPriceFeedAdressFromTokenAddress( address tokenAddress) external view returns(address){
+ return s_priceFeed[tokenAddress];
+    }
+
+    function getCollateralDepositedTokenAmount(address user, address token) external view returns(uint256){
+        return s_collectralDeposited[user][token];
+    }
+
+
+    function getUserMintedDscAmount(address user) external view returns(uint256){
+        return s_dscMinted[user];
+    }
+
+
+
+    function getCollateralTokenAddress(uint256 index) external view returns(address){
+        return s_collateralTokens[index];
+    }
+
+
+    function getAdditionalFeedPrecision() external view returns(uint256){
+        return ADDTIONAL_FEED_PRECISION;
+    }
+
+    function getPrecision() external view returns(uint256){
+        return PRECISION;
+    }
+
+
+function getLiquidationThreshold() external view returns(uint256){
+    return LIQUIDATION_THRESHOLD;
 }
+
+
+
+function getLiquidationPrecision() external view returns(uint256){
+    return LIQUIDATION_PRICISION;
+}
+
+
+
+
+function getMinHealthFactor() external view returns(uint256){
+    return MIN_HEALTH_FACTOR;
+}
+
+
+function getLiquidationBonus() external view returns(uint256){
+    return LIQUIDATON_BONUS;
+
+}
+
+
+
+    }
+

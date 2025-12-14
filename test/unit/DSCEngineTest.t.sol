@@ -17,7 +17,15 @@ contract DSCEngineTest is Test {
     address ethUsdPriceFeed;
     address weth;
     address btcUsdPriceFeed;
-    address btc;
+    address wbtc;
+
+        uint256 private constant ADDTIONAL_FEED_PRECISION = 1e10;
+    uint256 private constant PRECISION = 1e18;
+    uint256 private constant LIQUIDATION_THRESHOLD = 50; // mean we need to have 2times the amount minted as collectral
+    uint256 private constant LIQUIDATION_PRICISION = 100;
+    uint256 private constant MIN_HEALTH_FACTOR = 1e18;
+    uint256 private constant LIQUIDATON_BONUS = 10;
+
 
     address public USER = makeAddr("user");
     uint256 public constant AMOUNT_COLLATERAL = 10 ether;
@@ -28,6 +36,9 @@ contract DSCEngineTest is Test {
         (dscengine, dsc, config) = deployer.run();
         ethUsdPriceFeed = config.wethUsdPriceFeed;
         weth = config.weth;
+wbtc= config.wbtc;
+btcUsdPriceFeed = config.wbtcUsdPriceFeed;
+
 
         //vm.dea(USER,20 ether);
 
@@ -61,6 +72,141 @@ new DSCEngine(tokenAddresses, priceFeedAddresses, address(dsc));
 
 
 }
+
+
+////////////////////////
+ // Modifiers        //
+ //////////////////////
+
+modifier depositCollateral(){
+
+vm.startPrank(USER);
+ERC20Mock(weth).approve(address(dscengine), AMOUNT_COLLATERAL);
+dscengine.depositColletral(weth, AMOUNT_COLLATERAL);
+vm.stopPrank();
+
+_;
+
+}
+
+
+
+
+
+
+
+    ///////////////////////
+    // State Variable Tests       //
+    ///////////////////////
+
+
+function testGetPriceFeedAddressFromTokenAddress() external{
+
+assertEq(ethUsdPriceFeed,dscengine.getPriceFeedAdressFromTokenAddress(weth));
+assertEq(btcUsdPriceFeed,dscengine.getPriceFeedAdressFromTokenAddress(wbtc));
+
+
+}
+
+
+function testGetCollateralDepositedAmountByUser() external depositCollateral{
+
+assertEq(AMOUNT_COLLATERAL,dscengine.getCollateralDepositedTokenAmount(USER,weth));
+}
+
+
+
+function testGetMintedDscAmountByUser() external depositCollateral{
+
+vm.prank(USER);
+dscengine.mintDsc(5 ether);
+
+
+assertEq(5 ether,dscengine.getUserMintedDscAmount(USER));
+
+
+}
+
+
+function testGetCollateralTokenAddress() external{
+
+assertEq(weth,dscengine.getCollateralTokenAddress(0));
+assertEq(wbtc,dscengine.getCollateralTokenAddress(1));
+
+}
+
+
+
+function testAddtionalPrecisionFee() external view{
+
+assertEq(ADDTIONAL_FEED_PRECISION,dscengine.getAdditionalFeedPrecision());
+
+}
+
+
+function testPrecision() external view{
+
+assertEq(PRECISION,dscengine.getPrecision());
+
+}
+
+
+function testLiquidationThreshold() external view{
+
+assertEq(LIQUIDATION_THRESHOLD,dscengine.getLiquidationThreshold());
+
+}
+
+
+function testLiquidationPrecision() external view{
+
+assertEq(LIQUIDATION_PRICISION,dscengine.getLiquidationPrecision());
+
+}
+
+
+function testMinHealthFactor() external view{
+
+assertEq(MIN_HEALTH_FACTOR,dscengine.getMinHealthFactor());
+
+}
+
+
+function testLiquidationBonus() external view{
+
+assertEq(LIQUIDATON_BONUS,dscengine.getLiquidationBonus());
+
+}
+
+
+
+
+
+//////////////////////////
+
+  // Redeem Functions Tests //
+  //////////////////////////
+
+
+function testRedeemCollateral() external depositCollateral{
+
+vm.prank(USER);
+dscengine.redeemColletral(weth, AMOUNT_COLLATERAL);
+
+
+assertEq(ERC20Mock(weth).balanceOf(USER)
+, STARTING_ERC20_BALANCE);
+
+
+
+
+}
+
+
+
+
+
+
 
 
 
@@ -131,16 +277,6 @@ dscengine.depositColletral(address(newToken), AMOUNT_COLLATERAL);
 }
 
 
-modifier depositCollateral(){
-
-vm.startPrank(USER);
-ERC20Mock(weth).approve(address(dscengine), AMOUNT_COLLATERAL);
-dscengine.depositColletral(weth, AMOUNT_COLLATERAL);
-vm.stopPrank();
-
-_;
-
-}
 
 
 
