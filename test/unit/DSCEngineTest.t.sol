@@ -89,6 +89,16 @@ _;
 
 }
 
+modifier mintDsc(){
+
+vm.startPrank(USER);
+dscengine.mintDsc(5 ether);
+vm.stopPrank();
+
+_;
+
+}
+
 
 
 
@@ -116,10 +126,9 @@ assertEq(AMOUNT_COLLATERAL,dscengine.getCollateralDepositedTokenAmount(USER,weth
 
 
 
-function testGetMintedDscAmountByUser() external depositCollateral{
+function testGetMintedDscAmountByUser() external depositCollateral mintDsc{
 
-vm.prank(USER);
-dscengine.mintDsc(5 ether);
+
 
 
 assertEq(5 ether,dscengine.getUserMintedDscAmount(USER));
@@ -204,6 +213,49 @@ assertEq(ERC20Mock(weth).balanceOf(USER)
 
 
 
+function testRedeemCollatranlFailedHealthFactorBroken() external depositCollateral mintDsc{
+
+
+vm.prank(USER);
+
+vm.expectRevert(DSCEngine.DSCEngine__HealthFactorBroken.selector);
+dscengine.redeemColletral(weth, AMOUNT_COLLATERAL);
+
+
+}
+
+
+function testRedeepCollateralForDsc() external depositCollateral mintDsc{
+
+vm.startPrank(USER);
+dsc.approve(address(dscengine), 5 ether);
+//this line deemcollatral and burn the dsc
+dscengine.redeemCollecteralForDsc(weth, 5 ether);
+vm.stopPrank();
+
+vm.prank(USER);
+
+
+
+
+
+
+// this line redeem our remaining collateral in the contract
+dscengine.redeemColletral(weth, 5 ether);
+
+
+assertEq(ERC20Mock(weth).balanceOf(USER)
+, STARTING_ERC20_BALANCE);
+
+assertEq(dsc.balanceOf(USER), 0);
+
+
+
+}
+
+
+
+ 
 
 
 

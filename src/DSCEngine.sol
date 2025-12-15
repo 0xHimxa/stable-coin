@@ -35,7 +35,7 @@ contract DSCEngine {
     error DSCEngine__TokenAdressesAndPriceFeedAddressMustBeSameLength();
     error DSCEngine__NotAllowedToken();
     error DSCEngine__TransferFailed();
-    error DSCEngine__HealthFactorBroken(uint256 healthFactor);
+    error DSCEngine__HealthFactorBroken();
     error DSCEngine__MintFailed();
     error DSCEngine__HealthFactorOK();
     error DSCEngine__HealthFactorNotImporived();
@@ -395,7 +395,8 @@ function _redeemCollateral(address from, address to,address tokenCollecteralAddr
     function _revertHealFactorBroken(address user) internal view {
         uint256 userHealthFactor = _healthFactore(user);
         if (userHealthFactor < MIN_HEALTH_FACTOR) {
-            revert DSCEngine__HealthFactorBroken(userHealthFactor);
+            revert DSCEngine__HealthFactorBroken();
+            //userHealthFactor
         }
     }
 
