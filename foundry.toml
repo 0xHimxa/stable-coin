@@ -4,7 +4,7 @@ out = "out"
 libs = ["lib"]
 remapping = ["@openzeppelin/contracts=lib/openzeppelin-contracts/contracts"]
 [invariant]
-run = 128
+run = 1028
 debt = 128
 fail_on_revert = false
 
