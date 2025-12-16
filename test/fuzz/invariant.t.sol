@@ -19,6 +19,8 @@ import {DSCEngine} from "src/DSCEngine.sol";
 import {HelperConfig} from "script/helperConfig.s.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Handler} from "test/fuzz/handler.t.sol";
+
 
 contract InvariantsTest is  StdInvariant, Test{
 
@@ -30,6 +32,8 @@ address ethUsdPriceFeed;
     address weth;
     address btcUsdPriceFeed;
     address wbtc;
+    Handler handler;
+
 
     function setUp() external {
         deployer = new DeployDSC();
@@ -39,7 +43,17 @@ address ethUsdPriceFeed;
 wbtc= config.wbtc;
 btcUsdPriceFeed = config.wbtcUsdPriceFeed;
 
-targetContract(address(dscengine));
+//targetContract(address(dscengine));
+
+// now it is going to the function in handler with diffren val
+handler = new Handler(dscengine,dsc,weth,wbtc);
+
+targetContract(address(handler));
+
+
+//Hey dont call redeem collateral unless thier is collateral to
+
+
 
     }
 
