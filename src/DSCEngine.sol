@@ -8,6 +8,10 @@ import {
     AggregatorV3Interface
 } from "lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
+
+import {OracleLib} from "./libraries/OracleLib.sol";
+
+
 //"@chainlink/contracts=lib/chainlink-brownie-contracts/contracts/",
 
 /***
@@ -40,6 +44,19 @@ contract DSCEngine {
     error DSCEngine__HealthFactorOK();
     error DSCEngine__HealthFactorNotImporived();
    error DSCEngine__AmountExeedBanlance(); 
+
+
+/////////////////////////
+//   TYPES               //
+//////////////////////
+
+using OracleLib for AggregatorV3Interface;
+
+
+
+
+
+
     /////////////////////////////
     //  State Variables       //
     /////////////////////////////
@@ -421,7 +438,7 @@ if(s_collectralDeposited[from][tokenCollecteralAddress]  <  amountCollateral) re
         AggregatorV3Interface pricefeed = AggregatorV3Interface(
             s_priceFeed[token]
         );
-        (, int256 price, , , ) = pricefeed.latestRoundData();
+        (, int256 price, , , ) = pricefeed.staleCheckLatestRoundData();
         //($10e18 * 1e18) / ($2000e8 * 1e10)
         return
             (usdAmountInWei * PRECISION) /
@@ -448,7 +465,7 @@ if(s_collectralDeposited[from][tokenCollecteralAddress]  <  amountCollateral) re
         AggregatorV3Interface pricefeed = AggregatorV3Interface(
             s_priceFeed[token]
         );
-        (, int256 price, , , ) = pricefeed.latestRoundData();
+        (, int256 price, , , ) = pricefeed.staleCheckLatestRoundData();
 
         return
             ((uint256(price) * ADDTIONAL_FEED_PRECISION) * amount) / PRECISION;
