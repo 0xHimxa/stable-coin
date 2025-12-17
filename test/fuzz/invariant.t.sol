@@ -72,7 +72,7 @@ uint256 totalBtcDeposited = IERC20(wbtc).balanceOf(address(dscengine));
 
 console.log('Total Supply',totalSupply);
 console.log('Total Weth Deposited',totalWethDeposited);
-
+console.log('Times mint is called',handler.timeMintCalled());
 uint256 totalWethValue = dscengine.getUsdValue(weth, totalWethDeposited);
 uint256 totalBtcValue = dscengine.getUsdValue(wbtc, totalBtcDeposited);
 

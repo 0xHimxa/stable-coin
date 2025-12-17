@@ -21,6 +21,8 @@ DecentralisedStableCoin dsc;
 address weth;
 address wbtc;
 uint256 MAX_DEPOSIT_SIZE = type(uint96).max;
+uint256 public timeMintCalled;
+address[] userWithDepositedCollateral;
 
 
 
@@ -57,6 +59,8 @@ ERC20Mock(collateral).approve(address(dscengine),amountCollateral);
 dscengine.depositColletral(collateral,amountCollateral);
 
 vm.stopPrank();
+
+userWithDepositedCollateral.push(msg.sender);
 
 
 }
@@ -104,6 +108,45 @@ dscengine.redeemColletral(msg.sender,collateralAdd, amountCollateral);
 
 
 
+// the resonse why it not call the mint is beause it calling with random
+//address so some user dont hve collaterall we need to track those who have and thoae who dont
+
+
+
+
+
+function mintDsc(uint256 amountDscToMint, uint256 addressSeed) external{
+
+
+if(userWithDepositedCollateral.length == 0) return;
+
+
+address sender = userWithDepositedCollateral[addressSeed % userWithDepositedCollateral.length];
+
+
+(uint256 totalMinted, uint256 collectralValueInUsd) = dscengine.getAccountInfomation(sender);
+console.log('totalMinted',totalMinted,'collectralValueInUsd',collectralValueInUsd);
+
+
+int256 maxDscToMint = (int256(collectralValueInUsd) / 2) - int256(totalMinted);
+
+if(maxDscToMint < 0) return;
+
+amountDscToMint = bound(amountDscToMint, 0, uint256( maxDscToMint) );
+
+if(amountDscToMint == 0) return;
+
+
+
+
+vm.startPrank(sender);
+dscengine.mintDsc(amountDscToMint);
+vm.stopPrank();
+timeMintCalled ++;
+
+
+
+}
 
 
 
