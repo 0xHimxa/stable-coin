@@ -64,6 +64,9 @@ function invariants_protocolMustHaveMoreValueThanTotal() external view{
 
 
 uint256 totalSupply = dsc.totalSupply();
+
+
+
 uint256 totalWethDeposited = IERC20(weth).balanceOf(address(dscengine));
 uint256 totalBtcDeposited = IERC20(wbtc).balanceOf(address(dscengine));
 
@@ -73,8 +76,9 @@ console.log('Total Weth Deposited',totalWethDeposited);
 uint256 totalWethValue = dscengine.getUsdValue(weth, totalWethDeposited);
 uint256 totalBtcValue = dscengine.getUsdValue(wbtc, totalBtcDeposited);
 
-console.log('Weth value',totalWethValue);
-console.log('Btc value',totalBtcValue);
+console.log('Weth value',totalWethValue, weth);
+console.log('Btc value',totalBtcValue,weth);
+
 
 assert( totalWethValue + totalBtcValue >= totalSupply);
 

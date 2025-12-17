@@ -58,7 +58,7 @@ targetContract(address(dscengine));
     }
 
 
-function invariants_protocolMustHaveMoreValueThanTotal() external view{
+function invariant_protocolMustHaveMoreValueThanTotal() external view{
 // get the value of all the collateral in the protocol
 //compare it to all the dbt dsc minted
 

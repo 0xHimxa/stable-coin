@@ -50,16 +50,67 @@ amountCollateral = bound(amountCollateral, 1,  MAX_DEPOSIT_SIZE );
 
 
 vm.startPrank(msg.sender);
-ERC20Mock(weth).mint(msg.sender,amountCollateral);
-ERC20Mock(weth).approve(address(dscengine),amountCollateral);
-vm.stopPrank();
+ERC20Mock(collateral).mint(msg.sender,amountCollateral);
+ERC20Mock(collateral).approve(address(dscengine),amountCollateral);
 
 
 dscengine.depositColletral(collateral,amountCollateral);
 
+vm.stopPrank();
 
 
 }
+
+
+
+
+
+function redeemCollateral(uint256 collatralSeed,uint256 amountCollateral) external{
+
+address collateralAdd = _getCollateralFromSeed(collatralSeed);
+uint256 userDepositedCollateralRedeem = dscengine.getCollateralDepositedTokenAmount(msg.sender,collateralAdd);
+
+console.log(userDepositedCollateralRedeem,'total deposited');
+console.log(msg.sender,'sender address');
+
+//vm.assume( userDepositedCollateralRedeem > 0);
+
+// if(userDepositedCollateralRedeem == 0){
+//     userDepositedCollateralRedeem = 2;
+// }
+
+
+
+amountCollateral = bound(amountCollateral, 0,  userDepositedCollateralRedeem );
+
+
+console.log(userDepositedCollateralRedeem,'total deposited');
+console.log(amountCollateral,'amount to redeem');
+
+if(amountCollateral == 0) return;
+
+
+dscengine.redeemColletral(msg.sender,collateralAdd, amountCollateral);
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function _getCollateralFromSeed(uint256 collateralSeed) private view returns(address){
@@ -74,6 +125,8 @@ if(collateralSeed % 2 == 0){
 
 
 }
+
+
 
 
 

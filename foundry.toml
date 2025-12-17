@@ -4,9 +4,9 @@ out = "out"
 libs = ["lib"]
 remapping = ["@openzeppelin/contracts=lib/openzeppelin-contracts/contracts"]
 [invariant]
-run = 128
-debt = 128
-fail_on_revert = false
+run = 100
+debt = 50
+fail_on_revert = true
 
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

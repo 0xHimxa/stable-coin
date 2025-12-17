@@ -200,7 +200,7 @@ assertEq(LIQUIDATON_BONUS,dscengine.getLiquidationBonus());
 function testRedeemCollateral() external depositCollateral{
 
 vm.prank(USER);
-dscengine.redeemColletral(weth, AMOUNT_COLLATERAL);
+dscengine.redeemColletral(USER,weth, AMOUNT_COLLATERAL);
 
 
 assertEq(ERC20Mock(weth).balanceOf(USER)
@@ -219,7 +219,7 @@ function testRedeemCollatranlFailedHealthFactorBroken() external depositCollater
 vm.prank(USER);
 
 vm.expectRevert(DSCEngine.DSCEngine__HealthFactorBroken.selector);
-dscengine.redeemColletral(weth, AMOUNT_COLLATERAL);
+dscengine.redeemColletral(USER,weth, AMOUNT_COLLATERAL);
 
 
 }
@@ -230,7 +230,7 @@ function testRedeepCollateralForDsc() external depositCollateral mintDsc{
 vm.startPrank(USER);
 dsc.approve(address(dscengine), 5 ether);
 //this line deemcollatral and burn the dsc
-dscengine.redeemCollecteralForDsc(weth, 5 ether);
+dscengine.redeemCollecteralForDsc(USER,weth, 5 ether);
 vm.stopPrank();
 
 vm.prank(USER);
@@ -241,7 +241,7 @@ vm.prank(USER);
 
 
 // this line redeem our remaining collateral in the contract
-dscengine.redeemColletral(weth, 5 ether);
+dscengine.redeemColletral(USER,weth, 5 ether);
 
 
 assertEq(ERC20Mock(weth).balanceOf(USER)

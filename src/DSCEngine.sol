@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {DecentralisedStableCoin} from "./Decentrialsed.s.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+import "forge-std/console.sol";
 import {
     AggregatorV3Interface
 } from "lib/chainlink-brownie-contracts/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
@@ -39,7 +39,7 @@ contract DSCEngine {
     error DSCEngine__MintFailed();
     error DSCEngine__HealthFactorOK();
     error DSCEngine__HealthFactorNotImporived();
-
+   error DSCEngine__AmountExeedBanlance(); 
     /////////////////////////////
     //  State Variables       //
     /////////////////////////////
@@ -177,23 +177,29 @@ contract DSCEngine {
      */
 
     function redeemCollecteralForDsc(
+        address user,
         address tokenCollecteralAddress,
         uint256 amount
     ) external {
         burnDsc(amount);
 
-        redeemColletral(tokenCollecteralAddress, amount);
+        redeemColletral(user,tokenCollecteralAddress, amount);
         //redeemcollertral already checks health factor
     }
 
 
 
 
-    function redeemColletral(
+    function redeemColletral(address user,
         address tokenCollecteralAddress,
         uint256 amount
     ) public moreThanZero(amount) {
-       _redeemCollateral(msg.sender,msg.sender,tokenCollecteralAddress,amount);
+      // _redeemCollateral(msg.sender,msg.sender,tokenCollecteralAddress,amount);
+       // to this
+
+       _redeemCollateral(user,user,tokenCollecteralAddress,amount);
+
+       
         _revertHealFactorBroken(msg.sender);
     }
 
@@ -317,6 +323,10 @@ function _burnDsc(uint256 amountDscToBurn, address onBehalfOf, address  dscFrom)
 
 
 function _redeemCollateral(address from, address to,address tokenCollecteralAddress, uint256 amountCollateral) private{
+
+console.log(s_collectralDeposited[from][tokenCollecteralAddress],'total deposited, contract');
+
+if(s_collectralDeposited[from][tokenCollecteralAddress]  <  amountCollateral) revert DSCEngine__AmountExeedBanlance();
 
 
  s_collectralDeposited[from][tokenCollecteralAddress] -= amountCollateral;
